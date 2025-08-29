@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APEX MVP — Polished + Feedback (Updated)</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+  <style>
+    :root{
+      --brand:#0f62fe; --brand-600:#0353e9; --brand-50:#edf5ff;
+      --bg:#111213; --surface:#15171a; --surface-elev:#1a1d21; --border:#2a2e34;
+      --text:#e9e9ee; --text-muted:#a6a8af;
+      --success:#0e9f6e; --warn:#b45309; --danger:#b91c1c;
+      --shadow:0 1px 2px rgba(0,0,0,.6), 0 8px 24px rgba(0,0,0,.5);
+      --radius:12px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#fff; --surface:#fff; --surface-elev:#fafafa; --border:#e5e7eb;
+        --text:#111827; --text-muted:#6b7280;
+        --shadow:0 1px 2px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.06);
+      }
+    }
+
+    /* Base */
+    html,body,#app{margin:0;padding:0;background:var(--bg);color:var(--text);}
+    body{font-family:'Segoe UI',Arial,sans-serif;padding:14px;}
+    .hidden{display:none}
+
+    /* Flex helpers (IE10/11 fallbacks) */
+    .fx{display:-ms-flexbox;display:flex}
+    .fxr{-ms-flex-direction:row;flex-direction:row}
+    .fxc{-ms-flex-direction:column;flex-direction:column}
+    .fxw{-ms-flex-wrap:wrap;flex-wrap:wrap}
+    .ai-c{-ms-flex-align:center;align-items:center}
+    .ai-s{-ms-flex-align:start;align-items:flex-start}
+    .jc-c{-ms-flex-pack:center;justify-content:center}
+    .jc-b{-ms-flex-pack:justify;justify-content:space-between}
+    .jc-s{-ms-flex-pack:start;justify-content:flex-start}
+    .flex-1{-ms-flex:1 1 auto;flex:1 1 auto}
+
+    /* Spacing utils */
+    .mb-12{margin-bottom:12px}.mb-10{margin-bottom:10px}
+    .mt-6{margin-top:6px}.mt-8{margin-top:8px}.mt-10{margin-top:10px}
+    .ml-6{margin-left:6px}.ml-8{margin-left:8px}.mr-6{margin-right:6px}
+    .row-gap>*+*{margin-left:8px}
+    .col-gap>*+*{margin-top:8px}
+    .w-auto{width:auto!important}
+
+    /* Toolbar */
+    .toolbar{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:justify;justify-content:space-between;margin-bottom:12px}
+    .brand{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center}
+    .logo{width:22px;height:22px;border-radius:6px;background:var(--brand);box-shadow:inset 0 -6px 12px rgba(255,255,255,.15);display:-ms-inline-flexbox;display:inline-flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;margin-right:8px}
+    .env-badge{font-size:12px;padding:2px 8px;border:1px solid var(--border);border-radius:999px;background:var(--surface-elev);color:var(--text-muted);margin-left:8px}
+    .pill{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-align:center;align-items:center;padding:3px 8px;border-radius:999px;background:var(--surface-elev);border:1px solid var(--border);font-size:12px;color:var(--text-muted)}
+    .pill>*+*{margin-left:6px}
+
+    /* Message & toast */
+    #message-box{display:none;background:var(--brand-50);border:1px solid var(--brand);color:#0b3a8a;padding:10px;border-radius:8px;margin-bottom:12px;white-space:pre-wrap}
+    .toast-wrap{position:fixed;right:12px;bottom:72px;display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;z-index:99999}
+    .toast-wrap>*+*{margin-top:8px}
+    .toast{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--brand);box-shadow:var(--shadow);padding:10px 12px;border-radius:8px;min-width:240px}
+    .toast .title{font-weight:600;margin-bottom:2px}
+    .toast.success{border-left-color:var(--success)}
+    .toast.warn{border-left-color:var(--warn)}
+    .toast.danger{border-left-color:var(--danger)}
+
+    /* Sections */
+    .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow)}
+    .section-header{display:-ms-flexbox;display:flex;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-align:center;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-weight:600}
+    .subtitle{font-weight:400;color:var(--text-muted);font-size:12px}
+    .toggle-icon{transition:transform .25s ease;font-size:13px;opacity:.7}
+    .section-header.active .toggle-icon{transform:rotate(180deg)}
+    .section-content{max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s ease;padding:0 14px}
+    .section-content.open{padding:12px 14px}
+
+    /* Buttons */
+    .action-button{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;cursor:pointer;background:var(--brand);color:#fff;transition:transform .03s ease, background .12s ease, border-color .12s ease}
+    .action-button:hover{background:var(--brand-600)}
+    .action-button.secondary{background:var(--surface);color:var(--text)}
+    .action-button.secondary:hover{border-color:rgba(107,114,128,.30)}
+    .action-button.ghost{background:transparent;border-color:var(--brand);color:var(--brand)}
+    .action-button.ghost:hover{background:rgba(15,98,254,.10)}
+    .action-row{display:-ms-flexbox;display:flex}
+    .action-row>*+*{margin-left:8px}
+
+    /* Inputs */
+    .text-input{width:100%;height:36px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);padding:0 10px}
+    .textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text)}
+
+    /* Generated content layout */
+    .row{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap}
+    .half{-ms-flex:1 0 50%;flex:1 0 50%;box-sizing:border-box}
+
+    /* Answer card */
+    .answer-card{background:var(--surface-elev);border:1px solid var(--border);border-radius:10px;padding:12px; position:relative}
+    .answer-card h4{margin:0 0 6px 0}
+    .answer-body p{margin:8px 0}
+    .answer-body ul{margin:8px 0 8px 18px}
+    .footnote-ref{vertical-align:super;font-size:.75em;margin-left:2px}
+    .topnote{font-size:12px;color:var(--text-muted);margin-top:6px}
+
+    /* Sources */
+    .source-list{list-style:none;margin:10px 0 0 0;padding:0}
+    .source-item{position:relative;overflow:hidden;border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:10px;margin:8px 0}
+    .source-row{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center}
+    .source-row>*+*{margin-left:8px}
+    .source-index{font-weight:700;min-width:28px;text-align:center}
+    .source-title{-ms-flex:1 1 auto;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .source-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
+    .open-btn{margin-left:10px;padding:6px 10px;border-radius:999px;border:1px solid var(--brand);background:transparent;color:var(--brand);font-weight:600;cursor:pointer}
+    .open-btn:hover{background:rgba(15,98,254,.10)}
+    .right{margin-left:auto}
+
+    /* Chat layout */
+    #chat-content{display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;max-height:48vh;overflow:hidden}
+    #chat-wrap{-ms-flex:1 1 auto;flex:1 1 auto;overflow:auto;padding:6px 0 4px 0}
+    .chat-wrap{display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column}
+    .chat-wrap>*+*{margin-top:8px}
+    .chat-msg{display:-ms-flexbox;display:flex;-ms-flex-align:start;align-items:flex-start}
+    .chat-msg>*+*{margin-left:8px}
+    .avatar{width:24px;height:24px;border-radius:999px;background:var(--brand-50);color:var(--brand);display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center;font-size:12px;font-weight:700}
+    .chat-bubble{background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:8px 10px;max-width:100%;word-break:break-word}
+    .chat-input-wrap{position:static;background:var(--surface);padding-top:6px}
+    .chat-input-row{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;border-top:1px solid var(--border);padding:8px 0 4px 0}
+    .chat-input-row>*+*{margin-left:8px}
+    .send-btn{width:auto;padding:0 14px}
+
+    /* Misc */
+    .muted{font-size:12px;color:var(--text-muted)}
+    .visually-hidden{position:absolute;left:-9999px}
+
+    /* Spinner */
+    .spinner{margin-left:8px;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Inline citation previews (kept for future use) */
+    .fn-ref{ cursor:pointer; color:var(--brand) }
+    .fn-ref:focus{ outline:2px solid var(--brand); border-radius:2px }
+    .fn-popover{
+      position:absolute; z-index:1000;
+      background:var(--surface);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      padding:10px 12px; border-radius:10px;
+      display:none;
+      max-width:320px; width:auto;
+      word-break:break-word; white-space:normal;
+    }
+    .fn-popover .title{ font-weight:600; margin-bottom:4px }
+    .fn-popover .meta{ font-size:12px; color:var(--text-muted) }
+    .fn-popover .actions{ display:-ms-flexbox; display:flex; -ms-flex-align:center; align-items:center; margin-top:8px }
+    .fn-popover .actions>*+*{ margin-left:8px }
+    .source-item.highlight{ animation:fn-flash 1.2s ease 1 }
+    @keyframes fn-flash{ from{ background:rgba(15,98,254,.15) } to{ background:transparent } }
+
+    /* Feedback UI */
+    .fb-row{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;border-top:1px dashed var(--border);margin-top:8px;padding-top:8px}
+    .fb-label{font-size:12px;color:var(--text-muted);margin-right:8px}
+    .thumb-btn{display:-ms-inline-flexbox;display:inline-flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center;width:32px;height:28px;border:1px solid var(--border);border-radius:8px;background:var(--surface);cursor:pointer}
+    .thumb-btn[aria-pressed="true"]{border-color:var(--brand);box-shadow:0 0 0 2px rgba(15,98,254,.15) inset}
+    .fb-add{margin-left:8px;font-size:12px;color:var(--brand);background:transparent;border:none;cursor:pointer}
+    .fb-add:hover{text-decoration:underline}
+    .fb-form{display:none;margin-top:8px}
+    .fb-form.open{display:block}
+    .fb-text{width:100%;min-height:70px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);padding:8px}
+    .fb-actions{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;margin-top:6px}
+    .fb-actions>*+*{margin-left:8px}
+    .fb-small{font-size:12px;color:var(--text-muted)}
+
+    /* Generator pane (slide-over) */
+    .genpane-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:9998}
+    .genpane{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadow);display:none;z-index:9999}
+    .genpane.open,.genpane-backdrop.open{display:block}
+    .genpane .head{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:justify;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
+    .genpane .title{font-weight:700}
+    .genpane .body{padding:12px 14px;overflow:auto;position:absolute;top:48px;bottom:0;left:0;right:0}
+    .gen-label{font-size:12px;color:var(--text-muted);margin-bottom:6px;display:block}
+    .gen-input{width:100%;min-height:110px;border:1px solid var(--border);border-radius:10px;background:var(--surface-elev);color:var(--text);padding:10px}
+    .gen-actions{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;margin-top:8px}
+    .gen-actions>*+*{margin-left:8px}
+    .preview{margin-top:12px;background:var(--surface-elev);border:1px solid var(--border);border-radius:10px;padding:10px;min-height:120px}
+    .preview table{ border-collapse:collapse; width:100%; margin:8px 0 }
+    .preview th,.preview td{ border:1px solid var(--border); padding:6px 8px; text-align:left }
+  </style>
+</head>
+<body>
+  <div id="app" class="hidden">
+    <div class="toolbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">A</div>
+        <div>APEX</div>
+        <span class="env-badge">Demo Mode</span>
+      </div>
+      <div class="pill" id="status-pill">● Ready</div>
+    </div>
+
+    <div id="message-box" role="alert" aria-live="polite"></div>
+
+    <!-- Primary actions -->
+    <div class="action-row mb-12">
+      <button id="suggest-edit-button" class="action-button" aria-label="Suggest Smart Edit">Suggest Smart Edit</button>
+      <button id="document-audit-button" class="action-button secondary" aria-label="Evaluate current sentence">Evaluate Sentence</button>
+    </div>
+
+    <div class="action-row mb-12">
+      <button id="live-mode-button" class="action-button secondary" aria-pressed="false">Enable Live Sentence Mode</button>
+      <button id="clear-live-button" class="action-button secondary">Clear Live Markup</button>
+    </div>
+
+    <!-- Generated Content -->
+    <div class="section">
+      <div id="gen-header" class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="gen-content">
+        <span>Generated Content (Test) <span class="subtitle">Write directly into the Word doc</span></span>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div id="gen-content" class="section-content" role="region" aria-labelledby="gen-header">
+        <div class="answer-card">
+          <p class="muted mt-6">Open the generator pane to compose a request, preview the response, and apply it to the document.</p>
+          <div class="row mt-8 row-gap">
+            <button id="open-generator-pane" class="action-button">Open Generator Pane</button>
+            <button id="probe-button" class="action-button secondary w-auto">Probe API (Memory+Feedback)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAG -->
+    <div class="section">
+      <div id="rag-header" class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="rag-content">
+        <span>RAG Analysis Results <span class="subtitle">Top sources and answer</span></span>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div id="rag-content" class="section-content" role="region" aria-labelledby="rag-header">
+        <div id="rag-items"></div>
+      </div>
+    </div>
+
+    <!-- Live Suggestions -->
+    <div class="section">
+      <div id="live-header" class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="live-content">
+        <span>Live Suggestions <span class="subtitle">This session</span></span>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div id="live-content" class="section-content" role="region" aria-labelledby="live-header">
+        <div id="live-items" class="col-gap"></div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="section">
+      <div id="chat-header" class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="chat-content">
+        <span>Project Chat <span class="subtitle">Ask about the project</span></span>
+        <span class="toggle-icon">▾</span>
+      </div>
+
+      <div id="chat-content" class="section-content" role="region" aria-labelledby="chat-header">
+        <div id="chat-wrap" class="chat-wrap"></div>
+
+        <div class="chat-input-wrap">
+          <div class="chat-input-row">
+            <label for="chat-input" class="visually-hidden">Chat input</label>
+            <input id="chat-input" class="text-input" type="text" placeholder="Ask about the project…" />
+            <button id="chat-send-button" class="action-button send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- General feedback -->
+    <div class="section">
+      <div id="feedback-header" class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="feedback-content">
+        <span>Demo Feedback <span class="subtitle">Tell us what you think</span></span>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div id="feedback-content" class="section-content" role="region" aria-labelledby="feedback-header">
+        <div>
+          <div class="fb-row">
+            <div class="fb-label">Overall, was this helpful?</div>
+            <button class="thumb-btn" id="gfb-up" aria-label="Thumbs up" aria-pressed="false">👍</button>
+            <button class="thumb-btn ml-8" id="gfb-down" aria-label="Thumbs down" aria-pressed="false">👎</button>
+          </div>
+          <div class="fb-form open" id="gfb-form" aria-hidden="false">
+            <label for="gfb-text" class="fb-small">Comments (optional)</label>
+            <textarea id="gfb-text" class="fb-text" placeholder="What worked well? What was confusing?"></textarea>
+            <div class="fb-actions">
+              <button id="gfb-submit" class="action-button w-auto">Submit feedback</button>
+              <span class="fb-small" id="gfb-status"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /app -->
+
+  <!-- Generator Slide-over Pane -->
+  <div id="genpane-backdrop" class="genpane-backdrop" aria-hidden="true"></div>
+  <aside id="genpane" class="genpane" role="dialog" aria-modal="true" aria-labelledby="genpane-title" aria-hidden="true">
+    <div class="head">
+      <div id="genpane-title" class="title">Content Generator</div>
+      <button id="genpane-close" class="action-button ghost w-auto">Close</button>
+    </div>
+    <div class="body">
+      <label class="gen-label" for="genpane-input">Request</label>
+      <textarea id="genpane-input" class="gen-input" placeholder="Describe what to generate…"></textarea>
+
+      <div class="gen-actions">
+        <button id="genpane-generate" class="action-button w-auto">Generate Preview</button>
+        <span id="genpane-status" class="muted ml-8"></span>
+      </div>
+
+      <div class="preview" id="genpane-preview" aria-live="polite"></div>
+
+      <div class="gen-actions mt-8">
+        <button id="genpane-apply" class="action-button">Apply to Document</button>
+        <button id="genpane-stream" class="action-button secondary w-auto">Streaming Demo → APEX:GEN</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+  <script>
+  (function(){
+    'use strict';
+    var msgBox, statusPill;
+
+    /* ================== EXPLICIT ENDPOINTS (visible in Network) ================== */
+    const MEMORY_URL   = 'https://apex-apis.azurewebsites.net/api/memory';
+    const FEEDBACK_URL = 'https://apex-apis.azurewebsites.net/api/feedback';
+    const REFINE_URL   = 'https://spire-ai-function.azurewebsites.net/api/refine';
+
+    /* ================== APEX API CONFIG ================== */
+    var APEX = {
+      apiBase: 'https://apex-apis.azurewebsites.net',
+      get tenantId(){ return localStorage.getItem('apexTenantId') || 'company.com'; },
+      get userId(){ return localStorage.getItem('apexUserId') || 'user@company.com'; },
+      get sessionId(){
+        var s = localStorage.getItem('apexChatSessionId');
+        if(!s){
+          s = 'chat-' + new Date().toISOString().replace(/[:.]/g,'') + '-' + Math.random().toString(36).slice(2,8);
+          localStorage.setItem('apexChatSessionId', s);
+        }
+        return s;
+      },
+      get funcKey(){ return localStorage.getItem('apexFuncKey') || ''; },
+      get apiKey(){  return localStorage.getItem('apexApiKey')  || ''; }
+    };
+
+    /* Existing SP config kept (used for SharePoint URL transforms) */
+    var SP = {
+      baseUrl:'',
+      previewApi:'',
+      feedbackApi: FEEDBACK_URL,
+      spOrigin:'https://spirehi.sharepoint.com'
+    };
+
+    /* ------------ helpers ------------ */
+    function showMessage(text){ if(msgBox){ msgBox.textContent=text; msgBox.style.display='block'; } toast(text,'info'); }
+    function toast(text, level){ var wrap=document.getElementById('toast-wrap'); if(!wrap) return; var t=document.createElement('div'); t.className='toast'+(level?' '+level:''); t.innerHTML='<div class="title">'+(level?level.toUpperCase():'INFO')+'</div><div>'+escapeHtml(text)+'</div>'; wrap.appendChild(t); setTimeout(function(){ if(wrap.contains(t)) wrap.removeChild(t); }, 3500); }
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, function(m){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]);}); }
+    function toNum(v){ if(v==null) return NaN; if(typeof v==='number') return v; var n=parseFloat(v); return isFinite(n)?n:NaN; }
+    function fileNameFromPath(p){ var s=(p||'').split(/[\\\/]/); return s[s.length-1]||p||'Source'; }
+    function uid(prefix){ return (prefix||'id-') + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+
+    function semanticScoreOf(src){
+      var keys = ['semantic_score','effective_score','score','similarity','similarity_score','score_pct'];
+      for(var i=0;i<keys.length;i++){
+        var n = toNum(src && src[keys[i]]);
+        if(isFinite(n)) return n;
+      }
+      return NaN;
+    }
+    function topSemanticScore(sources){
+      var vals=(sources||[]).map(semanticScoreOf).filter(function(x){return isFinite(x);});
+      return vals.length?Math.max.apply(null, vals):NaN;
+    }
+
+    /* -------- SharePoint linking helpers -------- */
+    function encodeSpPath(p){
+      return String(p||'').split('/').map(function(seg){ return seg? encodeURIComponent(seg): seg; }).join('/');
+    }
+    function docUrlFromSourcedoc(origin, serverRelPath, fileName){
+      var sourcedoc = serverRelPath.charAt(0)==='/' ? serverRelPath : '/'+serverRelPath;
+      return origin + '/_layouts/15/Doc.aspx?sourcedoc=' +
+             encodeURIComponent(sourcedoc) +
+             '&file=' + encodeURIComponent(fileName || fileNameFromPath(sourcedoc)) +
+             '&action=default&mobileredirect=true';
+    }
+    function folderUrlFromPath(origin, filePath){
+      var rel = filePath.charAt(0)==='/' ? filePath.slice(1) : filePath;
+      return origin + '/' + encodeSpPath(rel);
+    }
+    function spDocUrlFromSharepointUrl(sharepointUrl, title){
+      try{
+        var u = new URL(sharepointUrl);
+        var pathname = u.pathname;
+        var file = title || fileNameFromPath(pathname);
+        return docUrlFromSourcedoc(u.origin, pathname, file);
+      }catch(_){ return sharepointUrl; }
+    }
+    function buildWebUrl(path, webUrl, previewUrl){
+      if(previewUrl) return previewUrl;
+      if(webUrl)     return webUrl;
+      if(SP.baseUrl && path) return SP.baseUrl.replace(/\/$/,'') + '/' + String(path).replace(/^\//,'');
+      return '';
+    }
+    function normalizeRef(s){
+      if(!s || typeof s !== 'object') return { name:'Source', path:'', webUrl:'', folderUrl:'', score:NaN };
+      var name   = s.title || s.name || fileNameFromPath(s.sharepointurl || s.path || s.url || '');
+      var folder = s.file_path || s.path || '';
+      var spRaw  = s.sharepointurl || s.webUrl || s.url || '';
+      var origin = '';
+      if (spRaw){
+        try{ origin = new URL(spRaw).origin; }catch(_){ origin = SP.spOrigin || ''; }
+      } else {
+        origin = SP.spOrigin || '';
+      }
+      var docUrl = '';
+      if (spRaw){
+        docUrl = spDocUrlFromSharepointUrl(spRaw, name);
+      } else if (origin && folder && name){
+        var serverRel = (folder.charAt(0)==='/'? folder : '/'+folder) + '/' + name;
+        docUrl = docUrlFromSourcedoc(origin, serverRel, name);
+      }
+      var folderUrl = (origin && folder) ? folderUrlFromPath(origin, folder) : '';
+      var sem    = semanticScoreOf(s);
+      return {
+        name: name,
+        filePath: folder,
+        rawSharePointUrl: spRaw,
+        webUrl: docUrl || spRaw || '',
+        folderUrl: folderUrl,
+        previewUrl: '',
+        score: sem
+      };
+    }
+
+    /* ---------------- Markdown + cleanup + tables ---------------- */
+    function inlineFormat(str){
+      return str
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(?!\s)(.+?)\*/g,'<em>$1</em>');
+    }
+    function stripHashArtifacts(s){
+      return s
+        .replace(/\(\s*#[A-Za-z0-9][\w-]{5,}[^)]*\)/g, '')
+        .replace(/\(\s*(?:https?:\/\/|www\.)[^)]*\)/gi, '')
+        .replace(/\(\s*aHR0[A-Za-z0-9+/=]{10,}[^)]*\)/g, '');
+    }
+    function addFootnoteRefs(raw){
+      let s = String(raw || '');
+      s = s.replace(/\[([^\]]+?)\]\(#(?:src-)?(\d+)\)/gi, '[$2]');
+      s = s.replace(/\((?:Document\s+)?Chunks?\s+(\d+)\s*(?:[,&]\s*(\d+))?\)/gi, (_, a, b) => '[' + a + ']' + (b ? ' [' + b + ']' : ''));
+      s = s.replace(/\[(?:Document\s+)?Chunks?\s+(\d+)\]/gi, '[$1]');
+      s = s.replace(/\(\s*(\[\d+\])\s*\)/g, '$1');
+      s = s.replace(/(\[\d+\])\s*(?:,|&|and)\s*(?=\[\d+\])/gi, '$1 ');
+      s = stripHashArtifacts(s);
+      return s;
+    }
+
+    /* === NEW: refined text cleanup & table support helpers === */
+    function normalizeRefinedMarkdown(md){
+      if(!md) return '';
+      let s = String(md);
+      s = s.replace(/^\s*\((?:intro|document)\)\s*/i, '');       // remove (Intro)/(Document) artifacts
+      s = s.replace(/(\S)\s+\|/g, '$1\n|');                      // make sure tables start on their own line
+      s = s.replace(/\|\s*\|\s*\|/g, '|\n|');                    // fix smashed table rows
+      s = s.replace(/(\n\|[^\n]+?\|)\s*(\|\s*-{3,}[^|\n]*\|)/g, '$1\n$2'); // header vs sep on same line
+      s = s.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+      return s.trim();
+    }
+    function isTableHeaderLine(line){ return /^\s*\|.+\|\s*$/.test(line); }
+    function isTableSepLine(line){ return /^\s*\|(?:\s*:?-{3,}\s*:?\s*\|)+\s*$/.test(line); }
+    function splitTableRow(line){
+      const trimmed = line.replace(/^\s*\|\s*/,'').replace(/\s*\|\s*$/,'');
+      return trimmed.split(/\s*\|\s*/);
+    }
+    function parseMarkdownTable(lines, startIdx){
+      const header = splitTableRow(lines[startIdx]);
+      let i = startIdx + 2;
+      const rows = [];
+      while(i < lines.length && isTableHeaderLine(lines[i])){
+        rows.push(splitTableRow(lines[i]));
+        i++;
+      }
+      return { header, rows, end: i };
+    }
+    function renderMarkdownTable(header, rows, caption){
+      let html = '';
+      if (caption) html += '<h6>'+escapeHtml(caption)+'</h6>';
+      html += '<table><thead><tr>';
+      header.forEach(h => html += '<th>'+inlineFormat(escapeHtml(h.trim()))+'</th>');
+      html += '</tr></thead><tbody>';
+      rows.forEach(r => {
+        html += '<tr>';
+        for(let j=0;j<header.length;j++){
+          const v = typeof r[j]==='string' ? r[j] : '';
+          html += '<td>'+inlineFormat(escapeHtml((v||'').trim()))+'</td>';
+        }
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    /* === UPGRADED renderer with tables === */
+    function renderMarkdown(md){
+      md = normalizeRefinedMarkdown(addFootnoteRefs(md));
+      const lines = String(md||'').split(/\r?\n/);
+      const html = [];
+      let i = 0;
+
+      function flushParagraph(buf){
+        const text = buf.join(' ').trim();
+        if(!text) return;
+        const safe = escapeHtml(text).replace(/\n/g,'<br>');
+        html.push('<p>'+inlineFormat(safe)+'</p>');
+        buf.length = 0;
+      }
+
+      const pbuf = [];
+      while(i < lines.length){
+        const line = lines[i];
+
+        if(!line.trim()){ flushParagraph(pbuf); i++; continue; }
+
+        const h = /^(#{1,6})\s+(.*)$/.exec(line);
+        if(h){
+          flushParagraph(pbuf);
+          html.push('<h4>'+inlineFormat(escapeHtml(h[2]))+'</h4>');
+          i++; continue;
+        }
+
+        if(/^\s*[-*]\s+/.test(line)){
+          flushParagraph(pbuf);
+          const items=[];
+          while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])){
+            items.push(lines[i].replace(/^\s*[-*]\s+/, ''));
+            i++;
+          }
+          html.push('<ul>'+items.map(it => '<li>'+inlineFormat(escapeHtml(it))+'</li>').join('')+'</ul>');
+          continue;
+        }
+
+        if (isTableHeaderLine(line) && (i+1)<lines.length && isTableSepLine(lines[i+1])){
+          flushParagraph(pbuf);
+          const { header, rows, end } = parseMarkdownTable(lines, i);
+          html.push(renderMarkdownTable(header, rows));
+          i = end; continue;
+        }
+
+        pbuf.push(line);
+        i++;
+      }
+      flushParagraph(pbuf);
+      return html.join('');
+    }
+
+    /* --------- Memory API ---------- */
+    function queueMemory(payload){
+      try{
+        var q = JSON.parse(localStorage.getItem('apexMemoryQueue')||'[]');
+        q.push({payload:payload, ts:Date.now()});
+        localStorage.setItem('apexMemoryQueue', JSON.stringify(q));
+      }catch(e){ console.warn('Queue memory failed', e, payload); }
+    }
+    async function trySendMemory(payload){
+      const baseUrl = MEMORY_URL;
+      const key = APEX.funcKey;
+      const url = key ? (baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'code=' + encodeURIComponent(key)) : baseUrl;
+
+      const body = { ...payload, tenant_id: APEX.tenantId, timestamp: new Date().toISOString() };
+      const headers = { 'Content-Type':'application/json','Accept':'application/json','X-Tenant-ID': APEX.tenantId };
+      if (APEX.apiKey) headers['x-api-key'] = APEX.apiKey;
+      if (APEX.funcKey && !url.includes('code=')) headers['x-functions-key'] = APEX.funcKey;
+
+      try{
+        const res = await fetch(url, { method:'POST', headers, body: JSON.stringify(body) });
+        const text = await res.text().catch(()=> '');
+        if(!res.ok) throw new Error('HTTP '+res.status + (text?(' :: '+text):''));
+        return true;
+      }catch(e){
+        queueMemory(payload);
+        return false;
+      }
+    }
+    async function flushMemoryQueue(){
+      var raw = localStorage.getItem('apexMemoryQueue'); if(!raw) return;
+      var q = []; try{ q = JSON.parse(raw)||[]; } catch(_){}
+      var out=[]; for (var i=0;i<q.length;i++){
+        var ok = await trySendMemory(q[i].payload);
+        if(!ok) out.push(q[i]);
+      }
+      if(out.length) localStorage.setItem('apexMemoryQueue', JSON.stringify(out));
+      else localStorage.removeItem('apexMemoryQueue');
+    }
+    function sendMemory(message_type, content){
+      var payload = {
+        content: String(content||''),
+        user_id: APEX.userId,
+        session_id: APEX.sessionId,
+        role: message_type === 'assistant' ? 'assistant' : 'user',
+        message_type: message_type === 'assistant' ? 'assistant' : 'user'
+      };
+      return trySendMemory(payload);
+    }
+
+    /* -------- Feedback plumbing -------- */
+    function queueFeedback(payload){
+      try{
+        var q = JSON.parse(localStorage.getItem('apexFeedbackQueue')||'[]');
+        q.push({payload:payload, ts:Date.now()});
+        localStorage.setItem('apexFeedbackQueue', JSON.stringify(q));
+      }catch(e){ console.warn('Queue feedback failed', e, payload); }
+    }
+    async function trySendFeedback(payload){
+      const baseUrl = SP.feedbackApi || FEEDBACK_URL;
+      const key = APEX.funcKey;
+      const url = key ? (baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'code=' + encodeURIComponent(key)) : baseUrl;
+
+      const body = { ...payload, tenant_id: APEX.tenantId, timestamp: new Date().toISOString() };
+      const headers = { 'Content-Type':'application/json','Accept':'application/json','X-Tenant-ID': APEX.tenantId };
+      if (APEX.apiKey) headers['x-api-key'] = APEX.apiKey;
+      if (APEX.funcKey && !url.includes('code=')) headers['x-functions-key'] = APEX.funcKey;
+
+      try{
+        const res = await fetch(url, { method:'POST', headers, body: JSON.stringify(body) });
+        const text = await res.text().catch(()=> '');
+        if(!res.ok) throw new Error('HTTP '+res.status + (text?(' :: '+text):''));
+        return true;
+      }catch(e){
+        queueFeedback(payload);
+        return false;
+      }
+    }
+    async function flushFeedbackQueue(){
+      var raw = localStorage.getItem('apexFeedbackQueue'); if(!raw) return;
+      var q = []; try{ q = JSON.parse(raw)||[]; } catch(_){}
+      var out=[]; for (var i=0;i<q.length;i++){
+        var ok = await trySendFeedback(q[i].payload);
+        if(!ok) out.push(q[i]);
+      }
+      if(out.length) localStorage.setItem('apexFeedbackQueue', JSON.stringify(out));
+      else localStorage.removeItem('apexFeedbackQueue');
+    }
+    window.addEventListener('online', function(){ flushFeedbackQueue(); flushMemoryQueue(); });
+
+    function ratingWordToNumber(word){ if(word==='up') return 5; if(word==='down') return 2; return 3; }
+
+    function createFeedbackRow(context){
+      var row=document.createElement('div'); row.className='fb-row';
+      row.innerHTML =
+        '<div class="fb-label">Was this helpful?</div>'+
+        '<button class="thumb-btn" aria-label="Thumbs up" aria-pressed="false" data-val="up">👍</button>'+
+        '<button class="thumb-btn ml-8" aria-label="Thumbs down" aria-pressed="false" data-val="down">👎</button>'+
+        '<button class="fb-add" type="button">Add comment</button>';
+      var form=document.createElement('div'); form.className='fb-form'; form.setAttribute('aria-hidden','true');
+      form.innerHTML =
+        '<label class="fb-small">Comments (optional)</label>'+
+        '<textarea class="fb-text" placeholder="What should we change or keep?"></textarea>'+
+        '<div class="fb-actions">'+
+          '<button class="action-button w-auto fb-submit">Submit</button>'+
+          '<span class="fb-small fb-hint">Docs: use [1] [2] to reference sources</span>'+
+        '</div>';
+      var wrap=document.createElement('div');
+      wrap.appendChild(row); wrap.appendChild(form);
+
+      var rating=null;
+      function setPressed(val){
+        var up=row.querySelector('.thumb-btn[data-val="up"]');
+        var down=row.querySelector('.thumb-btn[data-val="down"]');
+        up.setAttribute('aria-pressed', String(val==='up'));
+        down.setAttribute('aria-pressed', String(val==='down'));
+      }
+
+      row.addEventListener('click', function(e){
+        var t=e.target.closest('.thumb-btn');
+        if(t){
+          rating=t.getAttribute('data-val');
+          setPressed(rating);
+          form.classList.add('open'); form.setAttribute('aria-hidden','false');
+        }
+        var add=e.target.closest('.fb-add');
+        if(add){
+          form.classList.toggle('open');
+          form.setAttribute('aria-hidden', String(!form.classList.contains('open')));
+        }
+      });
+
+      var responseId = (context && context.responseId) || uid('airesp-');
+
+      form.querySelector('.fb-submit').addEventListener('click', async function(){
+        var text=form.querySelector('.fb-text').value||'';
+        var payload={
+          user_id: APEX.userId,
+          feedback: text,
+          rating: ratingWordToNumber(rating||'none'),
+          response_id: responseId
+        };
+        var ok = await trySendFeedback(payload);
+        toast(ok?'Thanks for the feedback!':'Saved feedback for later (offline).', ok?'success':'warn');
+        wrap.querySelectorAll('button,textarea').forEach(function(el){ el.disabled=true; });
+      });
+
+      return wrap;
+    }
+
+    /* ------------ unified answer card ------------ */
+    function makeAnswerCard(answerText, sources, note, options){
+      options = options || {};
+      var card=document.createElement('div'); card.className='answer-card';
+      if(note){ var n=document.createElement('div'); n.className='topnote'; n.textContent=note; card.appendChild(n); }
+
+      var ans=document.createElement('div'); ans.className='answer-body';
+      ans.innerHTML = renderMarkdown(answerText||'—');
+      card.appendChild(ans);
+
+      var list=document.createElement('ol'); list.className='source-list';
+      (sources||[]).map(normalizeRef).forEach(function(meta, idx){
+        var i = idx+1; var sem = isFinite(meta.score)? meta.score.toFixed(3) : '--';
+        var li=document.createElement('li'); li.className='source-item'; li.id='src-'+i;
+
+        var topRow=document.createElement('div'); topRow.className='source-row';
+        var titleHtml = meta.webUrl
+          ? '<a href="'+escapeHtml(meta.webUrl)+'" target="_blank" rel="noopener" class="source-title" title="'+escapeHtml(meta.name||'Source')+'">'+escapeHtml(meta.name||'Source')+'</a>'
+          : '<div class="source-title" title="'+escapeHtml(meta.name||'Source')+'">'+escapeHtml(meta.name||'Source')+'</div>';
+
+        topRow.innerHTML =
+          '<div class="source-index">['+i+']</div>'+
+          titleHtml+
+          '<div class="right">'+
+            (meta.folderUrl ? '<button class="open-btn" data-i="'+i+'" data-which="folder">Open Folder</button>' : '')+
+            '<button class="open-btn" data-i="'+i+'" data-which="doc">Open</button>'+
+          '</div>';
+
+        li.appendChild(topRow);
+
+        var metaRow=document.createElement('div'); metaRow.className='source-meta';
+        var locText = meta.filePath ? ' • ' + meta.filePath : '';
+        metaRow.textContent = '(semantic ' + sem + ')' + locText;
+        li.appendChild(metaRow);
+
+        li.setAttribute('data-name', meta.name||'');
+        li.setAttribute('data-filepath', meta.filePath||'');
+        li.setAttribute('data-weburl', meta.webUrl||'');
+        li.setAttribute('data-folderurl', meta.folderUrl||'');
+        li.setAttribute('data-spraw', meta.rawSharePointUrl||'');
+        list.appendChild(li);
+      });
+
+      var h=document.createElement('div'); h.className='mt-10'; h.innerHTML='<strong>Sources</strong>';
+      card.appendChild(h);
+      card.appendChild(list);
+
+      list.addEventListener('click', function(e){
+        var btn = e.target.closest('.open-btn'); if(!btn) return;
+        var li = btn.closest('.source-item');
+        var which = btn.getAttribute('data-which') || 'doc';
+        var url = (which==='folder')
+          ? (li.getAttribute('data-folderurl') || '')
+          : (li.getAttribute('data-weburl') || li.getAttribute('data-spraw') || '');
+        if (url) window.open(url,'_blank');
+      });
+
+      var fb = createFeedbackRow({
+        section: options.section || 'unknown',
+        sources: sources || [],
+        answerText: answerText || '',
+        note: note || '',
+        responseId: options.responseId || uid('airesp-')
+      });
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function renderRag(answer, sources, note){
+      var cont=document.getElementById('rag-items');
+      cont.innerHTML='';
+      cont.appendChild(makeAnswerCard(answer, sources, note, {section:'rag'}));
+    }
+
+    /* ------------ live log ------------ */
+    function logLiveSuggestion(sentence, answer, sources){
+      var box=document.getElementById('live-items');
+      var card=document.createElement('div'); card.className='answer-card';
+      var srcList=(sources||[]).map(function(s){ var m=normalizeRef(s); var sem=isFinite(m.score)?m.score.toFixed(3):'--'; return '<li>'+escapeHtml(m.name||'Source')+' (semantic '+sem+')</li>'; }).join('');
+      card.innerHTML='<div class="fx jc-b ai-c"><strong>Sentence</strong><button class="action-button ghost w-auto">Jump</button></div>'+
+                     '<p class="mt-6">'+escapeHtml(sentence)+'</p>'+
+                     '<div class="mt-6"><strong>Suggestion</strong></div>'+
+                     renderMarkdown(answer||'—')+
+                     '<details class="mt-6"><summary>Sources</summary><ul class="mt-6" style="padding-left:18px;">'+srcList+'</ul></details>';
+      card.querySelector('button').addEventListener('click', function(){ selectSentenceInDoc(sentence); });
+      var fb = createFeedbackRow({section:'live', sources:sources||[], answerText:answer||'', note:''});
+      card.appendChild(fb);
+      box.prepend(card);
+    }
+
+    /* ------------ chat ------------ */
+    function appendChatUser(text){
+      var wrap=document.getElementById('chat-wrap');
+      var row=document.createElement('div'); row.className='chat-msg';
+      var badge=document.createElement('div'); badge.className='avatar'; badge.textContent='Y';
+      var bubble=document.createElement('div'); bubble.className='chat-bubble';
+      bubble.textContent=text;
+      row.appendChild(badge); row.appendChild(bubble); wrap.appendChild(row);
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+    function appendChatBot(answer, sources, note){
+      var wrap=document.getElementById('chat-wrap');
+      var row=document.createElement('div'); row.className='chat-msg';
+      var badge=document.createElement('div'); badge.className='avatar'; badge.textContent='B';
+      var bubble=document.createElement('div'); bubble.className='chat-bubble flex-1';
+      var card = makeAnswerCard(answer, sources, note, {section:'chat'});
+      bubble.appendChild(card);
+      row.appendChild(badge); row.appendChild(bubble); wrap.appendChild(row);
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+
+    /* ------------ Word helpers ------------ */
+    async function selectSentenceInDoc(sentence){ return Word.run(async (ctx)=>{ var body=ctx.document.body; var results=body.search(sentence,{matchCase:false,matchWholeWord:false}); results.load('items'); await ctx.sync(); if(results.items.length){ results.items[0].select(); await ctx.sync(); } }); }
+    async function insertGeneratedText(text, mode){ mode=mode||'replace'; return Word.run(async (ctx)=>{ const sel=ctx.document.getSelection(); const where=(mode==='after')? Word.InsertLocation.after : (mode==='before')? Word.InsertLocation.before : Word.InsertLocation.replace; sel.insertText(text, where); await ctx.sync(); }); }
+    async function streamToGenControl(text, chunkMs){
+      chunkMs = chunkMs || 250; const tag='APEX:GEN';
+      await Word.run(async (ctx)=>{
+        let ccs=ctx.document.contentControls.getByTag(tag);
+        ccs.load('items'); await ctx.sync();
+        let cc;
+        if(!ccs.items.length){
+          const p=ctx.document.body.insertParagraph(' ', Word.InsertLocation.end);
+          cc=p.insertContentControl(); cc.title=tag; cc.tag=tag;
+          try{ cc.appearance='BoundingBox'; }catch(_){}}
+        else { cc=ccs.items[0]; }
+        cc.insertText('', 'Replace'); await ctx.sync();
+      });
+      const chunks=text.match(/.{1,90}(\s|$)/g) || [text];
+      for(let i=0;i<chunks.length;i++){
+        await new Promise(r=>setTimeout(r, chunkMs));
+        await Word.run(async (ctx)=>{
+          const ccs=ctx.document.contentControls.getByTag('APEX:GEN');
+          ccs.load('items'); await ctx.sync();
+          if(ccs.items.length){
+            const current=(i===0)? chunks[i] : (chunks.slice(0,i+1).join(''));
+            ccs.items[0].insertText(current, 'Replace'); await ctx.sync();
+          }
+        });
+      }
+    }
+    async function getFullText(){
+      return Word.run(async (ctx)=>{
+        const r = ctx.document.body.getRange();
+        r.load('text'); await ctx.sync();
+        return r.text || '';
+      });
+    }
+
+    /* ------------ Minimal chunker (fallback: whole doc as 1 chunk) ------------ */
+    window.latestChunks = [];
+    window.fullDocText = '';
+    async function chunkDocument(){
+      const fullText = await getFullText();
+      window.fullDocText = fullText || '';
+      const lines = (fullText||'').split(/\r?\n/).filter(Boolean);
+      const header = (lines[0]||'(Intro)').trim();
+      window.latestChunks = [{
+        index: 1,
+        header: header,
+        content: fullText || '',
+        blocks: [
+          { type:'heading', level:2, text: header },
+          { type:'paragraph', text: (fullText||'').trim() }
+        ]
+      }];
+      return { chunks: window.latestChunks, fullText };
+    }
+
+    /* ------------ /refine helpers (ignore meta) ------------ */
+    function normalizeBlocksToMarkdown(blocks){
+      if(!Array.isArray(blocks)) return '';
+      const out=[];
+      for(const b of blocks){
+        if(!b || typeof b!=='object') continue;
+        if(b.type==='heading'){
+          const lvl=Math.min(Math.max(parseInt(b.level||2,10),1),6);
+          const t=(b.text||'').trim(); if(t) out.push('#'.repeat(lvl)+' '+t);
+        }else if(b.type==='paragraph'){
+          const t=(b.text||'').trim(); if(t) out.push(t);
+        }else if(b.type==='list'){
+          const ordered=!!b.ordered;
+          (b.items||[]).forEach((it,idx)=>{
+            const s=(it && typeof it==='object' ? it.text : it) || '';
+            out.push((ordered? (idx+1)+'. ' : '- ')+String(s));
+          });
+        }else if(b.type==='table'){
+          const rows=Array.isArray(b.rows)? b.rows : [];
+          if(rows.length){
+            if(b.caption) out.push('###### '+b.caption);
+            const header=rows[0];
+            out.push('| '+header.join(' | ')+' |');
+            out.push('|' + header.map(()=> ' --- ').join('|') + '|');
+            for(let i=1;i<rows.length;i++) out.push('| '+rows[i].join(' | ')+' |');
+          }
+        }
+      }
+      return out.join('\n');
+    }
+    function normalizeChunkToMarkdown(chunk){
+      if(!chunk) return '';
+      if (typeof chunk.refined_markdown === 'string' && chunk.refined_markdown.trim()) return chunk.refined_markdown;
+      if (typeof chunk.refined_content === 'string' && chunk.refined_content.trim()) return chunk.refined_content;
+      if (Array.isArray(chunk.refined_blocks) && chunk.refined_blocks.length) return normalizeBlocksToMarkdown(chunk.refined_blocks);
+      if (Array.isArray(chunk.blocks) && chunk.blocks.length) return normalizeBlocksToMarkdown(chunk.blocks);
+      if (typeof chunk.content === 'string' && chunk.content.trim()) return chunk.content;
+      const h=(chunk.header||'').trim();
+      return h && h.toLowerCase()!=='(document)' ? `## ${h}` : '';
+    }
+    function extractMarkdownFromRefineResponse(j){
+      if(!j) return '';
+      if (j.data){
+        if (typeof j.data.refined_markdown==='string' && j.data.refined_markdown.trim()) return j.data.refined_markdown;
+        if (typeof j.data.markdown==='string' && j.data.markdown.trim()) return j.data.markdown;
+        if (typeof j.data.text==='string' && j.data.text.trim()) return j.data.text;
+        if (j.data.output){
+          if (typeof j.data.output.markdown==='string' && j.data.output.markdown.trim()) return j.data.output.markdown;
+          if (typeof j.data.output.text==='string' && j.data.output.text.trim()) return j.data.output.text;
+        }
+      }
+      const doc = (j.data && j.data.document) || j.document || (j.data && j.data.output && j.data.output.document);
+      if (doc && Array.isArray(doc.chunks) && doc.chunks.length){
+        const pieces = doc.chunks.map(normalizeChunkToMarkdown).filter(Boolean);
+        const md = pieces.join('\n\n').trim();
+        if (md) return md;
+      }
+      try{
+        const big=[];
+        (function crawl(o){
+          if(!o || typeof o!=='object') return;
+          for(const k of Object.keys(o)){
+            const v=o[k];
+            if (typeof v==='string' && v.trim().length>40 && /\s/.test(v)) big.push(v.trim());
+            else if (v && typeof v==='object') crawl(v);
+          }
+        })(j);
+        if(big.length) return big[0];
+      }catch(_){}
+      return '';
+    }
+
+    function buildRefineDocumentPayload(){
+      const snapshot = new Date().toISOString();
+      const chunks = Array.isArray(window.latestChunks) ? window.latestChunks : [];
+      return {
+        snapshot_at: snapshot,
+        tenant_id: APEX.tenantId,
+        user_id: APEX.userId,
+        session_id: APEX.sessionId,
+        chunk_count: chunks.length,
+        chunks: chunks.map(c => ({
+          index: c.index || 0,
+          header: c.header || '',
+          content: c.content || '',
+          blocks: Array.isArray(c.blocks) ? c.blocks : []
+        }))
+      };
+    }
+
+    async function callRefine(prompt){
+      const status = document.getElementById('genpane-status');
+      const preview = document.getElementById('genpane-preview');
+
+      if((!window.latestChunks || !window.latestChunks.length) && !window.fullDocText){
+        status.textContent = 'Reading document…';
+        await chunkDocument();
+      }
+
+      const documentPayload = buildRefineDocumentPayload();
+      if (!documentPayload.chunks || !documentPayload.chunks.length){
+        status.textContent = 'No content to refine.';
+        return;
+      }
+
+      const body = { document: documentPayload, prompt: String(prompt||'').trim() };
+
+      status.textContent = 'Refining…';
+      try{
+        const headers = { 'Content-Type':'application/json','Accept':'application/json','X-Tenant-ID': APEX.tenantId };
+        if (APEX.apiKey) headers['x-api-key'] = APEX.apiKey;
+        if (APEX.funcKey) headers['x-functions-key'] = APEX.funcKey;
+
+        const res = await fetch(REFINE_URL, { method:'POST', headers, body: JSON.stringify(body) });
+        const raw = await res.text();
+        if(!res.ok) throw new Error('HTTP '+res.status+' :: '+raw);
+
+        let j = {}; try { j = JSON.parse(raw); } catch(_) { j = { raw }; }
+
+        let md = extractMarkdownFromRefineResponse(j);
+        if (md.trim().toLowerCase()==='(document)') md = '';
+        md = normalizeRefinedMarkdown(md);
+
+        if(!md.trim()){
+          md = '— No refined content in response —';
+          console.debug('[refine] no markdown extracted; snippet:', raw.slice(0,600));
+        }
+
+        preview.innerHTML = renderMarkdown(md);
+        status.textContent = 'Preview ready.';
+      }catch(e){
+        status.textContent = 'Error: ' + (e.message||e);
+        toast('Refine error','danger');
+      }
+    }
+
+    /* ------------ actions ------------ */
+    function status(state){ if(!statusPill) return; var map={ 'Ready':['● Ready',''], 'Querying':['● Querying…','info'], 'Error':['● Error','danger'] }; var tui=map[state]||map['Ready']; statusPill.textContent=tui[0]; statusPill.className='pill '+(tui[1]||''); }
+
+    async function onSuggestEdit(){
+      var btn=document.getElementById('suggest-edit-button'); btn.disabled=true; var sp=document.createElement('span'); sp.className='spinner'; btn.appendChild(sp);
+      try{
+        var selection = await Word.run(function(ctx){ var s=ctx.document.getSelection().load('text'); return ctx.sync().then(function(){ return s.text; }); });
+        if(!String(selection).trim()){ showMessage('Please select text.'); return; }
+        status('Querying');
+        var resp=await fetch('https://spire-ai-function.azurewebsites.net/api/rag_query',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ query: selection, options:{ max_results:5 } }) });
+        var j=await resp.json(); msgBox.style.display='none';
+        var sources=(j && j.data && Array.isArray(j.data.sources))? j.data.sources : [];
+        var top=topSemanticScore(sources);
+        var note=isFinite(top)? ('Top semantic score: ' + top.toFixed(3)) : '';
+        renderRag((j && j.success && j.data && j.data.answer) ? j.data.answer : 'No reply.', sources, note);
+        ensureOpen('rag');
+      }catch(e){ console.error(e); showMessage('Error: ' + e.message); }
+      finally{ btn.disabled=false; if(sp&&sp.parentNode) sp.parentNode.removeChild(sp); status('Ready'); }
+    }
+
+    async function onChatSend(){
+      var btn=document.getElementById('chat-send-button'); btn.disabled=true; var sp=document.createElement('span'); sp.className='spinner'; btn.appendChild(sp);
+      try{
+        var inp=document.getElementById('chat-input'); var q=String(inp.value||'').trim(); if(!q){ btn.disabled=false; if(sp.parentNode) sp.parentNode.removeChild(sp); return; }
+        appendChatUser(q); inp.value='';
+
+        await sendMemory('user', q);
+
+        status('Querying');
+        var resp=await fetch('https://spire-ai-function.azurewebsites.net/api/rag_query',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ query:q, options:{ max_results:5 } }) });
+        var j=await resp.json(); msgBox.style.display='none';
+        var sources=(j && j.data && Array.isArray(j.data.sources))? j.data.sources : [];
+        var top=topSemanticScore(sources);
+        var note=isFinite(top)? ('Top semantic score: ' + top.toFixed(3)) : '';
+        var answerText = (j && j.success && j.data && j.data.answer) ? j.data.answer : 'No reply.';
+        appendChatBot(answerText, sources, note);
+
+        await sendMemory('assistant', answerText);
+
+      }catch(e){ console.error(e); showMessage('Error: ' + e.message); status('Error'); }
+      finally{ btn.disabled=false; if(sp&&sp.parentNode) sp.parentNode.removeChild(sp); status('Ready'); document.getElementById('chat-input').focus(); }
+    }
+
+    async function onEvaluate(){ ensureOpen('rag'); }
+
+    /* ------------ collapsible sections ------------ */
+    function addSectionToggles(){
+      ['gen','rag','live','chat','feedback'].forEach(function(sec){
+        var hdr=document.getElementById(sec+'-header'); var content=document.getElementById(sec+'-content');
+        if(!hdr||!content) return;
+        hdr.addEventListener('click', function(){
+          var isOpen=hdr.classList.toggle('active');
+          hdr.setAttribute('aria-expanded', String(isOpen));
+          if(isOpen){
+            content.classList.add('open');
+            if(sec==='chat'){ content.style.maxHeight=''; }
+            else { content.style.maxHeight=content.scrollHeight+'px'; }
+          } else {
+            content.classList.remove('open'); content.style.maxHeight='0';
+          }
+        });
+        hdr.addEventListener('keydown', function(ev){ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); hdr.click(); } });
+      });
+    }
+    function ensureOpen(id){
+      var hdr=document.getElementById(id+'-header'); var content=document.getElementById(id+'-content');
+      if(!hdr||!content) return;
+      if(!hdr.classList.contains('active')){
+        hdr.classList.add('active'); hdr.setAttribute('aria-expanded','true');
+        content.classList.add('open');
+        if(id!=='chat'){ content.style.maxHeight = content.scrollHeight + 'px'; }
+        else { content.style.maxHeight=''; }
+      }
+    }
+
+    /* ------------ seed demo ------------- */
+    function seedRagSample(){
+      var answer = 'Yes — the State of Hawaii is implementing a new **Enterprise Financial System (EFS)** as part of an ERP modernization initiative. See details [1] [2].';
+      var sources = [
+        { title:'Recommendations_for_EFS_OCM_Next_Steps_March_2025.docx', sharepointurl:'https://spirehi.sharepoint.com/sites/KendizoxSpire/Shared%20Documents/EFS%20Project/Recommendations_for_EFS_OCM_Next_Steps_March_2025.docx', file_path:'sites/KendizoxSpire/Shared Documents/EFS Project', semantic_score:3.260 },
+        { title:'EFS_Project_Charter_and_Structure_7.31.docx', sharepointurl:'https://spirehi.sharepoint.com/sites/KendizoxSpire/Shared%20Documents/EFS%20Project/EFS_Project_Charter_and_Structure_7.31.docx', file_path:'sites/KendizoxSpire/Shared Documents/EFS Project', semantic_score:3.142 }
+      ];
+      var top = topSemanticScore(sources);
+      renderRag(answer, sources, isFinite(top)?('Top semantic score: '+top.toFixed(3)):'');
+    }
+
+    /* ------------ Probe (Memory + Feedback) ------------ */
+    async function apexProbe(){
+      const stamp = new Date().toISOString();
+      await trySendMemory({ content:'probe: '+stamp, user_id: APEX.userId, session_id: APEX.sessionId, role:'user', message_type:'user' });
+      await trySendFeedback({ user_id: APEX.userId, feedback:'probe: '+stamp, rating:3, response_id:'probe-'+APEX.sessionId });
+      toast('Probe sent — check Network + Console', 'success');
+    }
+    window.apexProbe = apexProbe;
+
+    /* ------------ Generator Pane wiring ------------ */
+    function openGenPane(){ document.getElementById('genpane').classList.add('open'); document.getElementById('genpane-backdrop').classList.add('open'); document.getElementById('genpane').setAttribute('aria-hidden','false'); document.getElementById('genpane-backdrop').setAttribute('aria-hidden','false'); }
+    function closeGenPane(){ document.getElementById('genpane').classList.remove('open'); document.getElementById('genpane-backdrop').classList.remove('open'); document.getElementById('genpane').setAttribute('aria-hidden','true'); document.getElementById('genpane-backdrop').setAttribute('aria-hidden','true'); }
+
+    function wireGenPane(){
+      var inp = document.getElementById('genpane-input');
+      var preview = document.getElementById('genpane-preview');
+      var status = document.getElementById('genpane-status');
+
+      document.getElementById('open-generator-pane').addEventListener('click', openGenPane);
+      document.getElementById('genpane-close').addEventListener('click', closeGenPane);
+      document.getElementById('genpane-backdrop').addEventListener('click', closeGenPane);
+
+      document.getElementById('genpane-generate').addEventListener('click', async function(){
+        const q = String(inp.value||'').trim();
+        status.textContent='Reading document…';
+        await chunkDocument();            // ensures window.latestChunks is set
+        await callRefine(q);              // calls backend and renders into preview
+      });
+
+      document.getElementById('genpane-apply').addEventListener('click', async function(){
+        var text = preview.textContent || '';
+        if(!text.trim()){ toast('Nothing to apply. Generate first.','warn'); return; }
+        try{ await insertGeneratedText(text, 'replace'); toast('Inserted at selection.','success'); }
+        catch(e){ toast('Insert failed: ' + (e.message||e), 'danger'); }
+      });
+
+      document.getElementById('genpane-stream').addEventListener('click', async function(){
+        var text = (preview.textContent||'').trim() || (inp.value.trim() || 'Streaming from APEX demo…');
+        try{ await streamToGenControl(text, 110); toast('Streaming to APEX:GEN…','success'); }
+        catch(e){ toast('Streaming failed: ' + (e.message||e), 'danger'); }
+      });
+    }
+
+    /* ------------ Office bootstrap ------------ */
+    function bootstrap(){
+      msgBox=document.getElementById('message-box');
+      statusPill=document.getElementById('status-pill');
+      document.getElementById('app').classList.remove('hidden');
+
+      addSectionToggles();
+      ['gen','rag','chat','live','feedback'].forEach(ensureOpen);
+
+      document.getElementById('suggest-edit-button').addEventListener('click', onSuggestEdit);
+      document.getElementById('chat-send-button').addEventListener('click', onChatSend);
+      document.getElementById('document-audit-button').addEventListener('click', onEvaluate);
+      document.getElementById('clear-live-button').addEventListener('click', function(){ showMessage('Clear live markup (implementation kept from previous version).'); });
+
+      wireGenPane();
+
+      // General feedback wiring
+      (function wireGeneralFb(){
+        var up=document.getElementById('gfb-up'), down=document.getElementById('gfb-down');
+        var txt=document.getElementById('gfb-text'), btn=document.getElementById('gfb-submit'), status=document.getElementById('gfb-status');
+        var ratingWord=null;
+        function setPressed(val){ up.setAttribute('aria-pressed', String(val==='up')); down.setAttribute('aria-pressed', String(val==='down')); }
+        up.addEventListener('click', function(){ ratingWord='up'; setPressed(ratingWord); txt.focus(); });
+        down.addEventListener('click', function(){ ratingWord='down'; setPressed(ratingWord); txt.focus(); });
+        btn.addEventListener('click', async function(){
+          var payload={ user_id: APEX.userId, feedback: txt.value || '', rating: ratingWordToNumber(ratingWord||'none'), response_id: 'general-' + APEX.sessionId };
+          var ok = await trySendFeedback(payload);
+          status.textContent = ok ? 'Thanks!' : 'Saved for later (offline).';
+          toast(ok?'Thanks for the feedback!':'Saved feedback for later (offline).', ok?'success':'warn');
+          up.disabled=down.disabled=txt.disabled=btn.disabled=true;
+        });
+      })();
+
+      // Probe button
+      document.getElementById('probe-button').addEventListener('click', apexProbe);
+
+      // Enter to send
+      var chatInput=document.getElementById('chat-input');
+      chatInput.addEventListener('keydown', function(ev){
+        if(ev.key==='Enter' && !ev.shiftKey){ ev.preventDefault(); document.getElementById('chat-send-button').click(); }
+      });
+
+      seedRagSample();
+      status('Ready');
+
+      flushFeedbackQueue();
+      flushMemoryQueue();
+    }
+
+    if (Office && typeof Office.onReady === 'function') {
+      Office.onReady(function(info){ if(info.host===Office.HostType.Word){ bootstrap(); } });
+    } else {
+      Office.initialize = function(){ bootstrap(); };
+    }
+
+    /* ------------ global errors ------------ */
+    window.addEventListener('unhandledrejection', function(ev){
+      console.error('Unhandled rejection:', ev.reason);
+      if(msgBox){
+        var reason = ev.reason && (ev.reason.message || ev.reason);
+        msgBox.textContent = 'Async error: ' + reason;
+        msgBox.style.display = 'block';
+      }
+      toast(String(ev.reason && (ev.reason.message || ev.reason)),'danger');
+    });
+  })();
+  </script>
+</body>
+</html>
