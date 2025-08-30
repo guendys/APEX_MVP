@@ -77,6 +77,8 @@ This project is configured for automatic deployment to GitHub Pages. The built f
 
 **Live Site**: https://guendys.github.io/APEX_MVP
 
+**Status**: ✅ Deployed and ready for use
+
 ### Azure Web Services
 For Azure deployment, the project includes Azure-specific configuration files.
 
