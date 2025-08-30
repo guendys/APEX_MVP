@@ -68,6 +68,66 @@
             padding: 15px;
             margin: 20px 0;
         }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .step {
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .step-number {
+            background: #0366d6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .step-title {
+            font-weight: bold;
+            color: #0366d6;
+            margin-bottom: 10px;
+        }
+        .code-block {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e1e4e8;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #0366d6;
+            color: #0366d6;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -81,24 +141,124 @@
         <h2>Welcome to APEX_MVP</h2>
         <p>This is a Microsoft Office Add-in designed to enhance your Word experience. The add-in provides a taskpane interface that integrates seamlessly with Microsoft Word.</p>
         
-        <div class="info">
-            <strong>Status:</strong> ✅ Successfully deployed and ready for use
+        <div class="success">
+            <strong>Status:</strong> ✅ Deployed and ready for use
         </div>
 
         <h3>Quick Links</h3>
         <a href="taskpane.html" class="button">Open Taskpane</a>
         <a href="commands.html" class="button secondary">Commands</a>
-        <a href="manifest.xml" class="button secondary">Manifest</a>
+        <a href="manifest.xml" class="button secondary">Download Manifest</a>
         <a href="https://github.com/guendys/APEX_MVP" class="button secondary">GitHub Repository</a>
+    </div>
+
+    <div class="content">
+        <h2>Installation Guide</h2>
+        <p>Follow these steps to install APEX_MVP in Microsoft Word:</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('word-desktop')">Word Desktop</div>
+            <div class="tab" onclick="showTab('word-online')">Word Online</div>
+            <div class="tab" onclick="showTab('troubleshooting')">Troubleshooting</div>
+        </div>
+
+        <div id="word-desktop" class="tab-content active">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">Download the Manifest</div>
+                <p>Right-click on <a href="manifest.xml" download>manifest.xml</a> and select "Save link as..." to download the file to your computer.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">Open Microsoft Word</div>
+                <p>Launch Microsoft Word on your desktop computer.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Access Add-ins</div>
+                <p>Go to <strong>Insert</strong> tab → <strong>Add-ins</strong> group → <strong>My Add-ins</strong> → <strong>Upload My Add-in</strong></p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">Upload the Manifest</div>
+                <p>Click <strong>Browse</strong> and select the downloaded <code>manifest.xml</code> file, then click <strong>Upload</strong>.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-title">Start Using</div>
+                <p>Look for "APEX_MVP" in the <strong>Home</strong> tab ribbon and click "Show APEX_MVP" to open the taskpane.</p>
+            </div>
+
+            <div class="info">
+                <strong>Note:</strong> If you see a security warning, click "Trust this add-in" to proceed.
+            </div>
+        </div>
+
+        <div id="word-online" class="tab-content">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">Open Word Online</div>
+                <p>Go to <a href="https://www.office.com" target="_blank">office.com</a> and open Word Online.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">Access Add-ins</div>
+                <p>Go to <strong>Insert</strong> tab → <strong>Add-ins</strong> → <strong>Upload My Add-in</strong></p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Upload Manifest</div>
+                <p>Click <strong>Browse</strong> and select the <code>manifest.xml</code> file, then click <strong>Upload</strong>.</p>
+            </div>
+
+            <div class="warning">
+                <strong>Important:</strong> Word Online may have limited add-in support. For the best experience, use Word Desktop.
+            </div>
+        </div>
+
+        <div id="troubleshooting" class="tab-content">
+            <h3>Common Issues</h3>
+            
+            <div class="step">
+                <div class="step-title">Add-in not appearing in ribbon</div>
+                <p><strong>Solution:</strong> Try restarting Word after uploading the manifest. The add-in should appear in the Home tab under "APEX_MVP".</p>
+            </div>
+
+            <div class="step">
+                <div class="step-title">Security warning</div>
+                <p><strong>Solution:</strong> Click "Trust this add-in" when prompted. This is normal for custom add-ins.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-title">Upload fails</div>
+                <p><strong>Solution:</strong> Ensure you're using a supported version of Word (2016 or later) and that the manifest.xml file is not corrupted.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-title">Taskpane doesn't load</div>
+                <p><strong>Solution:</strong> Check your internet connection. The add-in loads content from GitHub Pages.</p>
+            </div>
+
+            <div class="info">
+                <strong>Need Help?</strong> Create an issue on our <a href="https://github.com/guendys/APEX_MVP" target="_blank">GitHub repository</a> for support.
+            </div>
+        </div>
     </div>
 
     <div class="content">
         <h3>How to Use</h3>
         <ol>
-            <li><strong>Install the Add-in:</strong> Use the manifest.xml file to install the add-in in Microsoft Word</li>
+            <li><strong>Install the Add-in:</strong> Follow the installation steps above</li>
             <li><strong>Open Word:</strong> Launch Microsoft Word (desktop or online)</li>
-            <li><strong>Load the Add-in:</strong> Use the manifest to load the add-in</li>
-            <li><strong>Access Taskpane:</strong> Click the add-in button in the ribbon to open the taskpane</li>
+            <li><strong>Load the Add-in:</strong> Upload the manifest.xml file</li>
+            <li><strong>Access Taskpane:</strong> Click the 'Show APEX_MVP' button in the ribbon</li>
+            <li><strong>Start Using:</strong> Select text and use the AI-powered features</li>
         </ol>
 
         <div class="warning">
@@ -113,6 +273,7 @@
             <li><strong>Host:</strong> Microsoft Word</li>
             <li><strong>Deployment:</strong> GitHub Pages</li>
             <li><strong>Build Status:</strong> ✅ Automated CI/CD</li>
+            <li><strong>Manifest URL:</strong> <code>https://guendys.github.io/APEX_MVP/manifest.xml</code></li>
         </ul>
     </div>
 
@@ -123,6 +284,22 @@
 
     <script>
         document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+        
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
     </script>
 </body>
 </html> 
