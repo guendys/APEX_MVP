@@ -8,6 +8,7 @@ A Microsoft Office Add-in (Word taskpane) built with JavaScript and Webpack.
 - Taskpane interface
 - Modern JavaScript with Babel transpilation
 - Webpack bundling and development server
+- **GitHub Pages deployment ready**
 
 ## Prerequisites
 
@@ -73,6 +74,8 @@ APEX_MVP/
 
 ### GitHub Pages
 This project is configured for automatic deployment to GitHub Pages. The built files will be deployed to the `gh-pages` branch.
+
+**Live Site**: https://guendys.github.io/APEX_MVP
 
 ### Azure Web Services
 For Azure deployment, the project includes Azure-specific configuration files.
