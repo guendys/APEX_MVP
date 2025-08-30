@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APEX_MVP - Office Add-in</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #0366d6;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        .content {
+            background: #f6f8fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background: #0366d6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px 10px 10px 0;
+            transition: background 0.2s;
+        }
+        .button:hover {
+            background: #0256cc;
+        }
+        .secondary {
+            background: #6a737d;
+        }
+        .secondary:hover {
+            background: #5a6268;
+        }
+        .info {
+            background: #e1f5fe;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo" style="background: #0366d6; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">APEX</div>
+        <h1>APEX_MVP</h1>
+        <p class="subtitle">Microsoft Office Add-in for Word</p>
+    </div>
+
+    <div class="content">
+        <h2>Welcome to APEX_MVP</h2>
+        <p>This is a Microsoft Office Add-in designed to enhance your Word experience. The add-in provides a taskpane interface that integrates seamlessly with Microsoft Word.</p>
+        
+        <div class="info">
+            <strong>Status:</strong> ✅ Successfully deployed and ready for use
+        </div>
+
+        <h3>Quick Links</h3>
+        <a href="taskpane.html" class="button">Open Taskpane</a>
+        <a href="commands.html" class="button secondary">Commands</a>
+        <a href="manifest.xml" class="button secondary">Manifest</a>
+        <a href="https://github.com/guendys/APEX_MVP" class="button secondary">GitHub Repository</a>
+    </div>
+
+    <div class="content">
+        <h3>How to Use</h3>
+        <ol>
+            <li><strong>Install the Add-in:</strong> Use the manifest.xml file to install the add-in in Microsoft Word</li>
+            <li><strong>Open Word:</strong> Launch Microsoft Word (desktop or online)</li>
+            <li><strong>Load the Add-in:</strong> Use the manifest to load the add-in</li>
+            <li><strong>Access Taskpane:</strong> Click the add-in button in the ribbon to open the taskpane</li>
+        </ol>
+
+        <div class="warning">
+            <strong>Note:</strong> This is a development version. For production use, ensure proper testing and validation.
+        </div>
+    </div>
+
+    <div class="content">
+        <h3>Technical Details</h3>
+        <ul>
+            <li><strong>Framework:</strong> JavaScript with Webpack</li>
+            <li><strong>Host:</strong> Microsoft Word</li>
+            <li><strong>Deployment:</strong> GitHub Pages</li>
+            <li><strong>Build Status:</strong> ✅ Automated CI/CD</li>
+        </ul>
+    </div>
+
+    <footer style="text-align: center; margin-top: 40px; color: #666;">
+        <p>APEX_MVP Office Add-in | Deployed via GitHub Pages</p>
+        <p><small>Last updated: <span id="lastUpdated"></span></small></p>
+    </footer>
+
+    <script>
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html> 
