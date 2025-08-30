@@ -81,6 +81,8 @@ This project is configured for automatic deployment to GitHub Pages. The built f
 
 **Trigger**: Deploy workflow should run automatically on push
 
+**Latest Deployment**: Triggering fresh deployment via GitHub Actions
+
 ### Azure Web Services
 For Azure deployment, the project includes Azure-specific configuration files.
 
